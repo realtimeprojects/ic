@@ -1,0 +1,29 @@
+active: true
+derived: false
+header: |
+  Directory Structure
+level: 1.1
+links: []
+normative: true
+priority: high
+ref: DD002
+reviewed: null
+state: draft
+tags:
+- directory
+- structure
+- organization
+text: |
+  The project follows a standard directory layout structure:
+
+  /
+  ├── docs/           # Documentation directory
+  │   └── ac/         # AC project documentation repository
+  └── sw/             # Software directory
+      └── ac/         # AC Python package containing main module
+
+  Directory descriptions:
+  - docs/: Contains all project documentation
+  - docs/ac/: Holds AC-specific documentation in YAML format
+  - sw/: Contains the Python software package and installer
+  - sw/ac/: Main AC Python package directory with core implementation
