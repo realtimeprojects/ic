@@ -1,0 +1,17 @@
+quicklinks:
+  default:
+    new:
+      state: [ "new" ]
+      priority: []
+    active:
+      state: ["in progress", "new", "approved" ]
+      priority: []
+    in progress:
+      state: ["in progress"]
+      priority: []
+    critical:
+      state: ["active", "new", "approved" ]
+      priority: ["blocker", "highest", "high" ]
+    review:
+      state: [ "done" ]
+      priority: []
