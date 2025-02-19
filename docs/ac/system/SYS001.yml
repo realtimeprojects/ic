@@ -1,15 +1,24 @@
 active: true
 derived: false
 header: |
-  About
+  About AC (Any Command)
 level: 1.0
 links: []
 normative: true
-priority: ''
-ref: ''
+priority: high
+ref: SYS001
 reviewed: null
-state: ''
+state: draft
 tags:
-- ''
+- cli
+- configuration
+- yaml
 text: |
-  AC serves as a generic command line interface driven by yaml configurations.
+  AC (Any Command) serves as a flexible command line interface framework that is driven by YAML configurations. 
+  This approach allows for easy creation and modification of CLI commands without changing the underlying code.
+  
+  Key features:
+  - YAML-based command configuration
+  - Generic command line interface
+  - Extensible command system
+  - Configuration-driven behavior
