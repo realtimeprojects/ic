@@ -1,0 +1,8 @@
+details:
+  description: Use cases for ac
+  title: Use Cases
+settings:
+  digits: 3
+  parent: SYS
+  prefix: UC
+  sep: ''

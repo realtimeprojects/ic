@@ -1,0 +1,8 @@
+details:
+  description: ''
+  title: Design
+settings:
+  digits: 3
+  parent: SYS
+  prefix: DD
+  sep: ''

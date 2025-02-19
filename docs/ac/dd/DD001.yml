@@ -1,0 +1,15 @@
+active: true
+derived: false
+header: |
+  python package
+level: 1.0
+links: []
+normative: true
+priority: ''
+ref: ''
+reviewed: null
+state: ''
+tags:
+- ''
+text: |
+  ac should be deivered as a installable python package.
