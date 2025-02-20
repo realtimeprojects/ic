@@ -4,9 +4,12 @@ Implements the command pattern for executing IC commands.
 """
 
 from abc import ABC, abstractmethod
-import subprocess
+import logging
 from typing import Dict, Any, Optional
+from .shell_executor import ShellExecutor
 
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 class CommandBase(ABC):
     """Abstract base class for all commands."""
@@ -43,20 +46,35 @@ class ShellCommand(CommandBase):
     
     def run(self) -> int:
         """
-        Execute the shell command specified in the configuration.
+        Execute the shell commands sequentially in a single shell environment.
+        Aborts execution if any command fails.
         
         Returns:
-            int: Return code from the shell command
+            int: Return code (0 for success, non-zero for failure)
         """
         shell_cmd = self.config.get('shell')
         if not shell_cmd:
             raise ValueError(f"No shell command specified for command '{self.name}'")
         
         try:
-            result = subprocess.run(shell_cmd, shell=True, check=False)
-            return result.returncode
+            cmds = shell_cmd.splitlines()
+            log.info(f"Starting execution of {len(cmds)} shell commands")
+            
+            executor = ShellExecutor()
+            
+            # Execute each command sequentially
+            for cmd in cmds:
+                status = executor.execute_command(cmd)
+                if status != 0:
+                    log.error(f"Command failed with status {status}: {cmd}")
+                    executor.cleanup()
+                    return status
+            
+            executor.cleanup()
+            return 0
+            
         except Exception as e:
-            print(f"Error executing command '{self.name}': {e}")
+            log.error(f"Error executing command '{self.name}': {e}")
             return 1
 
 

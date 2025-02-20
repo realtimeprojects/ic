@@ -1,8 +1,15 @@
 commands:
+  test:
+    shell: |
+      pip3
+      echo huhu
+      echo haha
   reset-env:
     help: resets the virtual environment
     shell: |
-      deactivate
       rm -rf .env
       virtualenv .env
+      .env/bin/activate
+      pip3 install .
+
 
