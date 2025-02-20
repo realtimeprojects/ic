@@ -3,6 +3,9 @@ import sys
 import yaml
 from pathlib import Path
 from typing import Optional, Dict, Any
+import logging
+
+logging.basicConfig(level=logging.DEBUG,  format='%(message)s')
 
 class CommandLineInterface:
     def __init__(self):

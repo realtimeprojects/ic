@@ -10,22 +10,21 @@ import threading
 import queue
 import os
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
+log = logging.getLogger()
 
 class OutputReader:
     """Handles reading output from a pipe in a background thread."""
     
-    def __init__(self, pipe, stream=None):
+    def __init__(self, pipe, is_stderr=False):
         """
         Initialize the output reader.
         
         Args:
             pipe: The pipe to read from (stdout or stderr)
-            stream: Optional output stream to write to (sys.stdout or sys.stderr)
+            is_stderr: Whether this reader is for stderr
         """
         self.pipe = pipe
-        self.stream = stream
+        self.is_stderr = is_stderr
         self.queue = queue.Queue()
         self.thread = threading.Thread(
             target=self._reader_thread,
@@ -41,9 +40,6 @@ class OutputReader:
                 if not line:
                     break
                 self.queue.put(line)
-                if self.stream:
-                    self.stream.write(line)
-                    self.stream.flush()
         except Exception as e:
             log.error(f"Reader thread error: {e}")
         finally:
@@ -70,13 +66,13 @@ class ShellExecutor:
             bufsize=1  # Line buffered
         )
         # Create output readers
-        self.stdout_reader = OutputReader(self.process.stdout, sys.stdout)
-        self.stderr_reader = OutputReader(self.process.stderr, sys.stderr)
+        self.stdout_reader = OutputReader(self.process.stdout, is_stderr=False)
+        self.stderr_reader = OutputReader(self.process.stderr, is_stderr=True)
 
     def execute_command(self, cmd: str) -> int:
         """
         Execute a single command and return its status code.
-        Prints command output in real-time.
+        Logs command output using the logger.
         
         Args:
             cmd: Shell command to execute
@@ -87,7 +83,7 @@ class ShellExecutor:
         if not cmd.strip():
             return 0
             
-        log.info(f"Executing: {cmd}")
+        log.info(f">> {cmd}")
         # Execute command and store its status in a variable
         self.process.stdin.write(f"{cmd}; __status=$?; echo $__status\n")
         self.process.stdin.flush()
@@ -97,11 +93,17 @@ class ShellExecutor:
         while status_line is None:
             # Process stdout
             line = self.stdout_reader.get_line()
-            if line is None:
-                continue
-            if line.rstrip().isdigit():
-                status_line = line.rstrip()
-                break
+            if line is not None:
+                line = line.rstrip()
+                if line.isdigit():
+                    status_line = line
+                else:
+                    log.info(f"{line}")
+            
+            # Process stderr
+            line = self.stderr_reader.get_line()
+            if line is not None:
+                log.warning(f"!! {line.rstrip()}")
                 
         return int(status_line) if status_line is not None else 1
 

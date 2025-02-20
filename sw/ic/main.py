@@ -1,6 +1,8 @@
 """
 Main entry point for the AC command line interface.
 """
+import  logging
+logging.basicConfig(level=logging.DEBUG)
 
 def main():
     """

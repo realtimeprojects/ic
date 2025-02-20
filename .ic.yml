@@ -1,9 +1,18 @@
 commands:
-  test:
+  update:
     shell: |
-      pip3
-      echo huhu
-      echo haha
+      pip3 install  .
+
+  testrun:
+    shell: |
+      ic update
+      ic test
+
+  echo-test:
+    shell: |
+      echo abc
+      echo def
+      
   reset-env:
     help: resets the virtual environment
     shell: |
