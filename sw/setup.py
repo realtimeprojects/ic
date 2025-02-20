@@ -5,8 +5,8 @@ setup(
     version="0.1.0",
     description="A flexible command line interface framework driven by YAML configurations",
     author="Your Name",
-    package_dir={"": "sw"},  # Tell setuptools to look for packages in sw/
-    packages=find_packages(where="sw"),  # Find packages starting from sw/
+    package_dir={"": "."},  # Changed from "sw" to "." since we're now in sw/
+    packages=find_packages(),  # Changed since we're now in sw/
     install_requires=[
         "pyyaml>=6.0",  # For YAML configuration parsing
     ],

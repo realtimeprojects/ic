@@ -1,0 +1,8 @@
+details:
+  description: Tasks
+  title: Taskks
+settings:
+  digits: 3
+  parent: SYS
+  prefix: TASK
+  sep: ''
