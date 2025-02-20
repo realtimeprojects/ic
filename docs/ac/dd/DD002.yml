@@ -17,13 +17,15 @@ text: |
   The project follows a standard directory layout structure:
 
   /
+  ├── setup.py        # Package installer script
   ├── docs/           # Documentation directory
   │   └── ac/         # AC project documentation repository
   └── sw/             # Software directory
-      └── ac/         # AC Python package containing main module
+      └── ic/         # IC Python package containing main module
 
   Directory descriptions:
+  - setup.py: Python package installation configuration
   - docs/: Contains all project documentation
   - docs/ac/: Holds AC-specific documentation in YAML format
-  - sw/: Contains the Python software package and installer
-  - sw/ac/: Main AC Python package directory with core implementation
+  - sw/: Contains the Python package source code
+  - sw/ic/: Main IC Python package directory with core implementation
