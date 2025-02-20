@@ -1,0 +1,39 @@
+active: true
+derived: false
+header: |
+  Default Configuration
+level: 1.1
+links: []
+normative: true
+priority: high
+ref: UC002
+reviewed: null
+state: draft
+tags:
+- configuration
+- default
+- help
+text: |
+  Default Configuration Requirements:
+
+  1. A default configuration file "default.yml" shall be automatically installed with the IC package
+  2. The default configuration file shall be located in the package's data directory
+  3. The default configuration shall provide the following basic commands:
+
+  ```yaml
+  commands:
+    help:
+      help: Display available commands and their descriptions
+      shell: ic --list-commands
+
+    version:
+      help: Display IC version information
+      shell: ic --version
+  ```
+
+  4. The help command shall:
+     - List all available commands
+     - Show each command's help text
+     - Be available even if no other configuration files are present
+
+  5. Users shall be able to override or extend the default configuration with their own configuration files

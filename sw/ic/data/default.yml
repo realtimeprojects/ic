@@ -1,0 +1,8 @@
+commands:
+  help:
+    help: Display available commands and their descriptions
+    shell: ic --list-commands
+  
+  version:
+    help: Display IC version information
+    shell: ic --version 

@@ -1,0 +1,45 @@
+active: true
+derived: false
+header: |
+  Command File Configuration
+level: 1.0
+links: []
+normative: true
+priority: high
+ref: UC001
+reviewed: null
+state: draft
+tags:
+- commands
+- configuration
+- yaml
+text: |
+  IC Command File Requirements:
+
+  1. IC shall be fully driven by command files
+  2. Command files shall be in YAML format
+  3. Command files shall define commands with the following structure:
+
+  ```yaml
+  commands:
+    <command_name>:
+      help: <command description>
+      shell: <shell command to execute>
+
+  # Example:
+  commands:
+    init:
+      help: Initializes a new git repository
+      shell: git init
+
+    status:
+      help: Shows git repository status
+      shell: git status
+  ```
+
+  4. Each command shall have:
+     - A unique name under the 'commands' section
+     - A help text describing the command's purpose
+     - A shell command to be executed when invoked
+
+  5. The command file structure shall be extensible for future additions

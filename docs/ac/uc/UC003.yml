@@ -1,0 +1,44 @@
+active: true
+derived: false
+header: |
+  Command File Loading Sequence
+level: 1.2
+links: []
+normative: true
+priority: high
+ref: UC003
+reviewed: null
+state: draft
+tags:
+- configuration
+- loading
+- precedence
+text: |
+  Command File Loading Requirements:
+
+  1. During each invocation of `ic`, configuration files shall be loaded in the following sequence:
+
+      a. Default configuration (installed with package)
+      b. Project configuration (./.ic.yml)
+      c. User global configuration (~/.config/ic/ic.yml)
+      d. User home configuration (~/.ic.yml)
+
+  2. File loading behavior:
+     - Each file is optional except for the default configuration
+     - Files are loaded only if they exist
+     - Later files override or extend commands from earlier files
+     - Command definitions in later files take precedence over earlier ones
+
+  3. Configuration file locations:
+     ```
+     <package>/default.yml     # Default configuration (always loaded)
+     ./.ic.yml                 # Project-specific configuration
+     ~/.config/ic/ic.yml       # User global configuration
+     ~/.ic.yml                 # User home configuration
+     ```
+
+  4. The loading sequence shall allow for:
+     - System-wide default commands
+     - Project-specific commands
+     - User-specific customizations
+     - Per-directory overrides
