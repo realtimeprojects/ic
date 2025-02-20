@@ -9,8 +9,10 @@ import sys
 import threading
 import queue
 import os
+import shlex
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 class OutputReader:
     """Handles reading output from a pipe in a background thread."""
@@ -55,15 +57,31 @@ class OutputReader:
 class ShellExecutor:
     """Handles execution of shell commands in a single shell environment."""
     
-    def __init__(self):
-        """Initialize the shell executor with a new shell process."""
+    def __init__(self, args=None):
+        """
+        Initialize the shell executor with a new shell process.
+        
+        Args:
+            args: List of command line arguments to make available to shell scripts
+        """
+        # Initialize environment with argument variables
+        self.env = os.environ.copy()
+        if args:
+            # Set individual argument variables (opt_1 through opt_5)
+            for i, arg in enumerate(args[:5], 1):
+                self.env[f'opt_{i}'] = arg
+            
+            # Set all arguments as space-separated string
+            self.env['options'] = ' '.join(shlex.quote(arg) for arg in args)
+        
         self.process = subprocess.Popen(
             '/bin/bash',
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            bufsize=1  # Line buffered
+            bufsize=1,  # Line buffered
+            env=self.env
         )
         # Create output readers
         self.stdout_reader = OutputReader(self.process.stdout, is_stderr=False)
@@ -83,7 +101,7 @@ class ShellExecutor:
         if not cmd.strip():
             return 0
             
-        log.info(f">> {cmd}")
+        log.info(f"Executing: {cmd}")
         # Execute command and store its status in a variable
         self.process.stdin.write(f"{cmd}; __status=$?; echo $__status\n")
         self.process.stdin.flush()

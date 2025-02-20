@@ -44,7 +44,7 @@ class CommandBase(ABC):
 class ShellCommand(CommandBase):
     """Command that executes a shell command."""
     
-    def run(self) -> int:
+    def run(self, args) -> int:
         """
         Execute the shell commands sequentially in a single shell environment.
         Aborts execution if any command fails.
@@ -60,7 +60,7 @@ class ShellCommand(CommandBase):
             cmds = shell_cmd.splitlines()
             log.info(f"Starting execution of {len(cmds)} shell commands")
             
-            executor = ShellExecutor()
+            executor = ShellExecutor(args)
             
             # Execute each command sequentially
             for cmd in cmds:

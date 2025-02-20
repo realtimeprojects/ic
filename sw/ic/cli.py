@@ -118,7 +118,7 @@ class CommandLineInterface:
         from .commands import CommandFactory
         
         command = CommandFactory.get(parsed_args.command, command_config)
-        return command.run()
+        return command.run(parsed_args.args)
 
 def main():
     cli = CommandLineInterface()

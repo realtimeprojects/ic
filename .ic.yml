@@ -10,15 +10,22 @@ commands:
 
   echo-test:
     shell: |
-      echo abc
-      echo def
-      
+      echo options:
+      echo --------
+      echo $options
+      echo $opt_1
+      echo ---------
+
+  release:
+    help: release a new version of ic
+    shell:
+      echo git release $options
   reset-env:
     help: resets the virtual environment
     shell: |
       rm -rf .env
       virtualenv .env
-      .env/bin/activate
+      . .env/bin/activate
       pip3 install .
 
 

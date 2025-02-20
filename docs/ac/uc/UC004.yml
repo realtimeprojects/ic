@@ -1,0 +1,71 @@
+active: true
+derived: false
+header: |
+  Command Line Argument Passing
+level: 1.3
+links: []
+normative: true
+priority: ''
+ref: ''
+reviewed: null
+state: in progress
+tags:
+- 'shell'
+- 'arguments'
+text: |
+  ## Objective
+
+  The user shall be able to pass command line arguments to shell scripts executed within IC command files. This enables dynamic behavior based on command line input.
+
+  ## Implementation
+
+  Arguments are passed through in two ways:
+  1. All arguments not consumed by `ic` itself are made available as environment variables:
+     - `opt_1` through `opt_5`: Quick access to the first 5 arguments
+     - `options`: Contains all arguments as a space-separated string
+
+  2. Arguments can be referenced in shell scripts using:
+     - `$opt_1` through `$opt_5` for individual arguments
+     - `$options` for all arguments
+
+  ## Examples
+
+  Command file (commands.yml):
+  ```yaml
+  commands:
+      # Print all arguments
+      show-all:
+          shell: echo "All args: $options"
+      
+      # Use specific arguments
+      greet:
+          shell: echo "Hello $opt_1, welcome to $opt_2"
+  ```
+
+  Usage:
+  ```bash
+  # Print all arguments
+  ic show-all arg1 arg2 arg3
+  
+  # Greet with name and place
+  ic greet John Paris
+  ```
+
+  ## Acceptance Criteria
+
+  1. Environment Setup:
+     - `ic` correctly sets environment variables for all unused arguments
+     - First 5 arguments are available as `opt_1` through `opt_5`
+     - All arguments are available in `options` variable
+
+  2. Shell Script Access:
+     - Shell scripts can access individual arguments via `$opt_N`
+     - Shell scripts can access all arguments via `$options`
+
+  3. Documentation:
+     - Usage is clearly documented in user guide
+     - Examples demonstrate both individual and collective argument access
+
+  4. Error Handling:
+     - Accessing undefined arguments (beyond what was provided) returns empty string
+     - Special characters in arguments are properly escaped
