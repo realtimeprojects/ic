@@ -8,7 +8,7 @@ normative: true
 priority: high
 ref: UC002
 reviewed: null
-state: draft
+state: closed
 tags:
 - configuration
 - default

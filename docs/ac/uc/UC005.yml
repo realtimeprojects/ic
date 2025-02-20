@@ -1,0 +1,31 @@
+active: true
+derived: false
+header: |
+  sub-commands
+level: 1.4
+links: []
+normative: true
+priority: ''
+ref: ''
+reviewed: null
+state: in progress
+tags:
+- ''
+text: |
+  ## objective
+
+  support  sub-commands like:
+           ic hooks enable
+           ic hooks disable
+
+  ## example:
+
+  ```yaml
+  commands:
+       hooks:
+             help: enable and disable commit hooks
+             commands:
+                    enable:
+                         help: enables the commit hooks
+                          shell: <shell command>
+  ```

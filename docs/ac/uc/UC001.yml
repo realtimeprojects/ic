@@ -8,7 +8,7 @@ normative: true
 priority: high
 ref: UC001
 reviewed: null
-state: draft
+state: closed
 tags:
 - commands
 - configuration

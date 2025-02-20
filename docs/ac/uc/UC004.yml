@@ -8,10 +8,10 @@ normative: true
 priority: ''
 ref: ''
 reviewed: null
-state: in progress
+state: done
 tags:
-- 'shell'
-- 'arguments'
+- shell
+- arguments
 text: |
   ## Objective
 
@@ -36,7 +36,7 @@ text: |
       # Print all arguments
       show-all:
           shell: echo "All args: $options"
-      
+
       # Use specific arguments
       greet:
           shell: echo "Hello $opt_1, welcome to $opt_2"
@@ -46,7 +46,7 @@ text: |
   ```bash
   # Print all arguments
   ic show-all arg1 arg2 arg3
-  
+
   # Greet with name and place
   ic greet John Paris
   ```

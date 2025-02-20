@@ -8,7 +8,7 @@ normative: true
 priority: high
 ref: UC003
 reviewed: null
-state: draft
+state: closed
 tags:
 - configuration
 - loading
