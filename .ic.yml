@@ -1,0 +1,8 @@
+commands:
+  reset-env:
+    help: resets the virtual environment
+    shell: |
+      deactivate
+      rm -rf .env
+      virtualenv .env
+
