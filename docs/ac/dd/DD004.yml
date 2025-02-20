@@ -1,0 +1,19 @@
+active: true
+derived: false
+header: |
+  command line syntax
+level: 1.3
+links: []
+normative: true
+priority: ''
+ref: ''
+reviewed: null
+state: ''
+tags:
+- ''
+text: |
+  ##  synopsis
+
+  ```shell
+  ac <command> [args]
+  ```

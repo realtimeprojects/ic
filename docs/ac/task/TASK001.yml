@@ -21,7 +21,7 @@ text: |
      - CommandFactory class with proper factory pattern
      - CommandBase abstract base class
      - ShellCommand concrete implementation
-  
+
   2. API Documentation:
      - All classes shall have proper docstrings
      - All public methods shall be documented
