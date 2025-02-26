@@ -10,6 +10,7 @@ import threading
 import queue
 import os
 import shlex
+import re
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -54,10 +55,20 @@ class OutputReader:
         except queue.Empty:
             return None
 
+def _replace(value, env):
+    def _substitude(match):
+        _match = match.group()[1:]
+        if _match in env:
+            _match = env[_match]
+
+        return _match
+
+    return re.sub("\$\w+", _substitude, value)
+
 class ShellExecutor:
     """Handles execution of shell commands in a single shell environment."""
     
-    def __init__(self, args=None):
+    def __init__(self, args=None, env={}):
         """
         Initialize the shell executor with a new shell process.
         
@@ -66,6 +77,10 @@ class ShellExecutor:
         """
         # Initialize environment with argument variables
         self.env = os.environ.copy()
+
+        for name, value in env.items():
+            self.env[name] = _replace(value, env)
+
         if args:
             # Set individual argument variables (opt_1 through opt_5)
             for i, arg in enumerate(args[:5], 1):
@@ -101,7 +116,7 @@ class ShellExecutor:
         if not cmd.strip():
             return 0
             
-        log.info(f"Executing: {cmd}")
+        log.debug(f"> {cmd}")
         # Execute command and store its status in a variable
         self.process.stdin.write(f"{cmd}; __status=$?; echo $__status\n")
         self.process.stdin.flush()
@@ -120,7 +135,7 @@ class ShellExecutor:
             
             # Process stderr
             line = self.stderr_reader.get_line()
-            if line is not None:
+            if line and line.rstrip():
                 log.warning(f"!! {line.rstrip()}")
                 
         return int(status_line) if status_line is not None else 1

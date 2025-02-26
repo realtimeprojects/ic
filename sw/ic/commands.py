@@ -14,7 +14,7 @@ log.setLevel(logging.DEBUG)
 class CommandBase(ABC):
     """Abstract base class for all commands."""
     
-    def __init__(self, name: str, config: Dict[str, Any]):
+    def __init__(self, name: str, config: Dict[str, Any], env: Dict[str, str]):
         """
         Initialize command with its configuration.
         
@@ -24,6 +24,7 @@ class CommandBase(ABC):
         """
         self.name = name
         self.config = config
+        self.env = env
         self._help = config.get('help', 'No help available')
 
     def help(self) -> str:
@@ -52,6 +53,7 @@ class ShellCommand(CommandBase):
         Returns:
             int: Return code (0 for success, non-zero for failure)
         """
+        self.env.update(self.config.get('env', {}))
         shell_cmd = self.config.get('shell')
         if not shell_cmd:
             raise ValueError(f"No shell command specified for command '{self.name}'")
@@ -60,7 +62,7 @@ class ShellCommand(CommandBase):
             cmds = shell_cmd.splitlines()
             log.info(f"Starting execution of {len(cmds)} shell commands")
             
-            executor = ShellExecutor(args)
+            executor = ShellExecutor(args, self.env)
             
             # Execute each command sequentially
             for cmd in cmds:
@@ -82,7 +84,7 @@ class CommandFactory:
     """Factory class for creating command instances."""
     
     @staticmethod
-    def get(name: str, config: Dict[str, Any]) -> Optional[CommandBase]:
+    def get(name: str, config: Dict[str, Any], env: Dict[str, str]) -> Optional[CommandBase]:
         """
         Create and return a command instance based on the configuration.
         
@@ -94,7 +96,7 @@ class CommandFactory:
             CommandBase: Instance of appropriate command class, or None if invalid
         """
         if 'shell' in config:
-            return ShellCommand(name, config)
+            return ShellCommand(name, config, env)
         elif 'script' in config:
             # Reserved for future implementation
             raise NotImplementedError("Script commands are not yet implemented")
