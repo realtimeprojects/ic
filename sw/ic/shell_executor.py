@@ -65,11 +65,17 @@ def _replace(value, env):
 
     return re.sub(r"\$\w+", _substitude, value)
 
+def _bash_cmd():
+    if sys.platform == 'win32':
+        return os.environ.get('BASH_PATH', 'c:\\msys64\\usr\\bin\\bash.exe')
+    else:
+        return os.environ.get('BASH_PATH', '/bin/bash')
+
 class ShellExecutor:
     """Handles execution of shell commands in a single shell environment."""
     _modes = {
-            'bash': { 'cmd': "cmd.exe",                        'fmt': " && echo %error_level%\n"},
-            'cmd':  { 'cmd': 'c:\\msys64\\usr\\bin\\bash.exe', 'fmt': f"; __status=$?; echo $__status\n" },
+            'cmd':   { 'cmd': "cmd.exe",   'fmt': " && echo %error_level%\n"},
+            'bash':  { 'cmd': _bash_cmd(), 'fmt': f"; __status=$?; echo $__status\n" },
     }
     
     def __init__(self, args=None, env={}, mode="bash"):
@@ -128,7 +134,7 @@ class ShellExecutor:
             
         log.debug(f"> {cmd}")
         # Execute command and store its status in a variable
-        self.input(cmd + ShellExecutor.mode[self._mode]['fmt'])
+        self.input(cmd + ShellExecutor._modes[self._mode]['fmt'])
         
         # Read and process output until we get the status code
         status_line = None

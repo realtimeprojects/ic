@@ -1,4 +1,10 @@
 commands:
+  _env:
+    IC_ENV: dev
+    help: environment variables
+    shell: |
+      echo "IC_ENV=dev"
+
   update:
     shell: |
       pip3 install  .
@@ -15,6 +21,7 @@ commands:
       echo $options
       echo $opt_1
       echo ---------
+      echo IC_ENV=$IC_ENV
 
   release:
     help: release a new version of ic

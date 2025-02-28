@@ -53,7 +53,7 @@ class ShellCommand(CommandBase):
         Returns:
             int: Return code (0 for success, non-zero for failure)
         """
-        self.env.update(self.config.get('env', {}))
+        self.env.update(self.config.get('_env', {}))
         shell_cmd = self.config.get('shell')
         if not shell_cmd:
             raise ValueError(f"No shell command specified for command '{self.name}'")
@@ -62,7 +62,7 @@ class ShellCommand(CommandBase):
             cmds = shell_cmd.splitlines()
             log.info(f"Starting execution of {len(cmds)} shell commands")
             
-            executor = ShellExecutor(args, self.env)
+            executor = ShellExecutor(args=args, env=self.env)
             
             # Execute each command sequentially
             for cmd in cmds:

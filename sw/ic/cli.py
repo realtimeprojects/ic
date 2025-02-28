@@ -117,7 +117,7 @@ class CommandLineInterface:
         command_config = self.config['commands'][parsed_args.command]
         from .commands import CommandFactory
         
-        env = self.config['commands']['env']
+        env = self.config['commands']['_env']
         command = CommandFactory.get(parsed_args.command, command_config, env)
         return command.run(parsed_args.args)
 
