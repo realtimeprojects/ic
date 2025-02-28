@@ -63,18 +63,24 @@ def _replace(value, env):
 
         return _match
 
-    return re.sub("\$\w+", _substitude, value)
+    return re.sub(r"\$\w+", _substitude, value)
 
 class ShellExecutor:
     """Handles execution of shell commands in a single shell environment."""
+    _modes = {
+            'bash': { 'cmd': "cmd.exe",                        'fmt': " && echo %error_level%\n"},
+            'cmd':  { 'cmd': 'c:\\msys64\\usr\\bin\\bash.exe', 'fmt': f"; __status=$?; echo $__status\n" },
+    }
     
-    def __init__(self, args=None, env={}):
+    def __init__(self, args=None, env={}, mode="bash"):
         """
         Initialize the shell executor with a new shell process.
         
         Args:
             args: List of command line arguments to make available to shell scripts
         """
+        self._mode = mode
+
         # Initialize environment with argument variables
         self.env = os.environ.copy()
 
@@ -90,7 +96,7 @@ class ShellExecutor:
             self.env['options'] = ' '.join(shlex.quote(arg) for arg in args)
         
         self.process = subprocess.Popen(
-            '/bin/bash',
+            ShellExecutor._modes[self._mode]['cmd'],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -101,6 +107,10 @@ class ShellExecutor:
         # Create output readers
         self.stdout_reader = OutputReader(self.process.stdout, is_stderr=False)
         self.stderr_reader = OutputReader(self.process.stderr, is_stderr=True)
+
+    def input(self, data):
+        self.process.stdin.write(data)
+        self.process.stdin.flush()
 
     def execute_command(self, cmd: str) -> int:
         """
@@ -118,15 +128,14 @@ class ShellExecutor:
             
         log.debug(f"> {cmd}")
         # Execute command and store its status in a variable
-        self.process.stdin.write(f"{cmd}; __status=$?; echo $__status\n")
-        self.process.stdin.flush()
+        self.input(cmd + ShellExecutor.mode[self._mode]['fmt'])
         
         # Read and process output until we get the status code
         status_line = None
         while status_line is None:
             # Process stdout
             line = self.stdout_reader.get_line()
-            if line is not None:
+            if line and line.rstrip():
                 line = line.rstrip()
                 if line.isdigit():
                     status_line = line
