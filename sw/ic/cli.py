@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 import logging
 
+from .commands import CommandFactory
+
 logging.basicConfig(level=logging.DEBUG,  format='%(message)s')
 
 class CommandLineInterface:
@@ -94,32 +96,31 @@ class CommandLineInterface:
         # You'll want to import this from your package metadata
         print("ic version 0.1.0")
 
-    def execute(self, args: Optional[list] = None) -> int:
+    def execute(self, args = None) -> int:
+        
+        __cmd_factory = CommandFactory(self.config)
+        
         if args is None:
             args = sys.argv[1:]
 
-        parsed_args = self.parser.parse_args(args)
+        args = self.parser.parse_args(args)
+        logging.info(f"Executing command: {args}")
 
-        if parsed_args.version:
+        if args.version:
             self.show_version()
             return 0
 
-        if parsed_args.list_commands or parsed_args.help or not parsed_args.command:
+        if args.list_commands or args.help or not args.command:
             self.list_commands()
             return 0
 
-        if parsed_args.command not in self.config.get('commands', {}):
-            print(f"Unknown command: {parsed_args.command}")
+        cmd = __cmd_factory.get(args)
+        if not cmd:
+            print(f"Unknown command: {args.command}")
             self.list_commands()
             return 2
 
-        # Create and execute the command using the factory
-        command_config = self.config['commands'][parsed_args.command]
-        from .commands import CommandFactory
-        
-        env = self.config['commands']['_env']
-        command = CommandFactory.get(parsed_args.command, command_config, env)
-        return command.run(parsed_args.args)
+        return cmd.run(args)
 
 def main():
     cli = CommandLineInterface()

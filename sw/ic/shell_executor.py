@@ -95,11 +95,11 @@ class ShellExecutor:
 
         if args:
             # Set individual argument variables (opt_1 through opt_5)
-            for i, arg in enumerate(args[:5], 1):
+            for i, arg in enumerate(args.args, 1):
                 self.env[f'opt_{i}'] = arg
             
             # Set all arguments as space-separated string
-            self.env['options'] = ' '.join(shlex.quote(arg) for arg in args)
+            self.env['options'] = ' '.join(shlex.quote(arg) for arg in args.args)
         
         self.process = subprocess.Popen(
             ShellExecutor._modes[self._mode]['cmd'],

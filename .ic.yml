@@ -27,6 +27,7 @@ commands:
     help: release a new version of ic
     shell:
       echo git release $options
+      
   reset-env:
     help: resets the virtual environment
     shell: |
@@ -35,4 +36,16 @@ commands:
       . .env/bin/activate
       pip3 install .
 
+  git:
+    help: git commands
 
+    commands:
+      pull:
+        help: pull the latest changes
+        shell: |
+          git pull  
+
+      push:
+        help: push the latest changes
+        shell: |
+          git push
