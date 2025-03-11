@@ -9,6 +9,7 @@ from typing import Dict, Any, Optional
 from .shell_executor import ShellExecutor
 import argparse
 import traceback
+import signal
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -28,6 +29,7 @@ class CommandBase(ABC):
         self.config = config
         self.env = env
         self._help = config.get('help', 'No help available')
+        signal.signal(signal.SIGINT, self.terminate)
 
     def help(self) -> str:
         """Return the help text for this command."""
@@ -41,6 +43,10 @@ class CommandBase(ABC):
         Returns:
             int: Return code (0 for success, non-zero for failure)
         """
+        pass
+
+    @abstractmethod
+    def terminate(self, sig, frame):
         pass
 
 class CommandGroup(CommandBase):
@@ -80,6 +86,9 @@ class CommandGroup(CommandBase):
 
 class ShellCommand(CommandBase):
     """Command that executes a shell command."""
+    def __init__(self, name: str, config: Dict[str, Any], env: Dict[str, str]):
+        super().__init__(self, name, config, env)
+        self.executor = None
     
     def run(self, args) -> int:
         """
@@ -98,17 +107,17 @@ class ShellCommand(CommandBase):
             cmds = shell_cmd.splitlines()
             log.debug(f"Starting execution of {len(cmds)} shell commands")
             
-            executor = ShellExecutor(args=args, env=self.env)
+            self.executor = ShellExecutor(args=args, env=self.env)
             
             # Execute each command sequentially
             for cmd in cmds:
-                status = executor.execute_command(cmd)
+                status = self.executor.execute_command(cmd)
                 if status != 0:
                     log.error(f"Command failed with status {status}: {cmd}")
-                    executor.cleanup()
+                    self.executor.cleanup()
                     return status
             
-            executor.cleanup()
+            self.executor.cleanup()
             return 0
             
         except Exception as e:
@@ -117,12 +126,22 @@ class ShellCommand(CommandBase):
             traceback.print_exc() 
             return 1
 
+    def terminate(self, sig, frame):
+        self.executor.close()
+
+    print('You pressed Ctrl+C!')
+    runner.close()
+    sys.exit(0)
+
+
+
 
 class CommandFactory:
     """Factory class for creating command instances."""
     def __init__(self, config, env = {}):
         self.config = config
         self.env = env
+        self.env.update(self.config.get("commands", {}).get("_env", {}))
 
     def get(self, args) -> Optional[CommandBase]:
         """

@@ -7,7 +7,7 @@ import logging
 
 from .commands import CommandFactory
 
-logging.basicConfig(level=logging.DEBUG,  format='%(message)s')
+logging.basicConfig(level=logging.INFO,  format='%(message)s')
 
 class CommandLineInterface:
     def __init__(self):

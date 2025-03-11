@@ -11,6 +11,7 @@ import queue
 import os
 import shlex
 import re
+import time
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -45,13 +46,13 @@ class OutputReader:
                 self.queue.put(line)
         except Exception as e:
             log.error(f"Reader thread error: {e}")
-        finally:
-            self.queue.put(None)  # Signal EOF
+        #        finally:
+        # self.queue.put(None)  # Signal EOF
     
     def get_line(self, timeout=0.1):
         """Get a line from the queue, returns None on timeout."""
         try:
-            return self.queue.get(timeout=timeout)
+            return self.queue.get(timeout=0.001)
         except queue.Empty:
             return None
 
@@ -74,8 +75,8 @@ def _bash_cmd():
 class ShellExecutor:
     """Handles execution of shell commands in a single shell environment."""
     _modes = {
-            'cmd':   { 'cmd': "cmd.exe",   'fmt': " && echo %error_level%\n"},
-            'bash':  { 'cmd': _bash_cmd(), 'fmt': f"; __status=$?; echo $__status\n" },
+            'cmd':   { 'cmd': "cmd.exe",   'fmt': "echo CMD_STATUS: %error_level%\n"},
+            'bash':  { 'cmd': _bash_cmd(), 'fmt': f"__status=$?; echo CMD_STATUS: $__status\n" },
     }
     
     def __init__(self, args=None, env={}, mode="bash"):
@@ -118,6 +119,21 @@ class ShellExecutor:
         self.process.stdin.write(data)
         self.process.stdin.flush()
 
+
+    def readline(self):
+        line = self.stdout_reader.get_line()
+        if not line:
+            return None
+        line = line.strip()
+        if not line:
+            return None
+
+        log.info(f"{line}")
+        if "CMD_STATUS:" in line:
+            return int(line.split()[1])
+        return line
+
+
     def execute_command(self, cmd: str) -> int:
         """
         Execute a single command and return its status code.
@@ -134,26 +150,21 @@ class ShellExecutor:
             
         log.debug(f"> {cmd}")
         # Execute command and store its status in a variable
-        self.input(cmd + ShellExecutor._modes[self._mode]['fmt'])
+        self.input(cmd + "\n")
+        self.input(ShellExecutor._modes[self._mode]['fmt'] + "\n")
         
         # Read and process output until we get the status code
         status_line = None
-        while status_line is None:
-            # Process stdout
-            line = self.stdout_reader.get_line()
-            if line and line.rstrip():
-                line = line.rstrip()
-                if line.isdigit():
-                    status_line = line
-                else:
-                    log.info(f"{line}")
-            
+        while True:
             # Process stderr
             line = self.stderr_reader.get_line()
             if line and line.rstrip():
                 log.warning(f"!! {line.rstrip()}")
                 
-        return int(status_line) if status_line is not None else 1
+            # Process stdout
+            line = self.readline()
+            if isinstance(line, int):
+                return line
 
     def cleanup(self):
         """Clean up the shell process."""
