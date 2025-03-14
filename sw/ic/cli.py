@@ -35,9 +35,9 @@ class CommandLineInterface:
         self._load_default_config()
         
         # Load optional configs
-        self._load_project_config()
         self._load_user_global_config()
         self._load_user_home_config()
+        self._load_project_config()
 
     def _load_default_config(self) -> None:
         default_config_path = Path(__file__).parent / 'data' / 'default.yml'
