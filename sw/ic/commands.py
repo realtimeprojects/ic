@@ -87,7 +87,7 @@ class CommandGroup(CommandBase):
 class ShellCommand(CommandBase):
     """Command that executes a shell command."""
     def __init__(self, name: str, config: Dict[str, Any], env: Dict[str, str]):
-        super().__init__(self, name, config, env)
+        super().__init__(name, config, env)
         self.executor = None
     
     def run(self, args) -> int:
@@ -128,12 +128,6 @@ class ShellCommand(CommandBase):
 
     def terminate(self, sig, frame):
         self.executor.close()
-
-    print('You pressed Ctrl+C!')
-    runner.close()
-    sys.exit(0)
-
-
 
 
 class CommandFactory:
