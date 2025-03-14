@@ -86,9 +86,10 @@ class CommandGroup(CommandBase):
 
 class ShellCommand(CommandBase):
     """Command that executes a shell command."""
-    def __init__(self, name: str, config: Dict[str, Any], env: Dict[str, str]):
+    def __init__(self, name: str, config: Dict[str, Any], env: Dict[str, str], prefer_os_env=False):
         super().__init__(name, config, env)
         self.executor = None
+        self.prefer_os_env = prefer_os_env
     
     def run(self, args) -> int:
         """
@@ -107,7 +108,7 @@ class ShellCommand(CommandBase):
             cmds = shell_cmd.splitlines()
             log.debug(f"Starting execution of {len(cmds)} shell commands")
             
-            self.executor = ShellExecutor(args=args, env=self.env)
+            self.executor = ShellExecutor(args=args, env=self.env, prefer_os_env=self.prefer_os_env)
             
             # Execute each command sequentially
             for cmd in cmds:
@@ -157,7 +158,7 @@ class CommandFactory:
             return CommandGroup(args.command, cmdconfig, self.env)
 
         if 'shell' in cmdconfig:
-            return ShellCommand(args.command, cmdconfig, self.env)
+            return ShellCommand(args.command, cmdconfig, self.env, prefer_os_env=True)
         
         elif 'script' in cmdconfig:
             # Reserved for future implementation

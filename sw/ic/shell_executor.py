@@ -79,7 +79,7 @@ class ShellExecutor:
             'bash':  { 'cmd': _bash_cmd(), 'fmt': f"__status=$?; echo CMD_STATUS: $__status\n" },
     }
     
-    def __init__(self, args=None, env={}, mode="bash"):
+    def __init__(self, args=None, env={}, mode="bash", prefer_os_env=False):
         """
         Initialize the shell executor with a new shell process.
         
@@ -92,8 +92,13 @@ class ShellExecutor:
         self.env = os.environ.copy()
 
         for name, value in env.items():
-            self.env[name] = _replace(value, env)
+            if name in self.env:
+                if prefer_os_env:
+                    log.warning(f"ignoring {name} (already set to {self.env[name]})")
+                    continue
+            self.env[name] = _replace(value, self.env)
 
+        log.error(f"GPR_PROJECT_PATH_FILE={self.env.get('GPR_PROJECT_PATH_FILE', None)}")
         if args:
             # Set individual argument variables (opt_1 through opt_5)
             for i, arg in enumerate(args.args, 1):
