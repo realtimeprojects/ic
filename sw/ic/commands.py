@@ -83,6 +83,8 @@ class CommandGroup(CommandBase):
         for cmd in self.config.get('commands', {}).keys():
             log.info(f"  {cmd}")
 
+    def terminate(self, sig, frame):
+        pass
 
 class ShellCommand(CommandBase):
     """Command that executes a shell command."""
